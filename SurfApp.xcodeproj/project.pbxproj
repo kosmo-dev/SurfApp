@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D4DEDF829952326006AC3EF /* HeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D4DEDF729952326006AC3EF /* HeaderCollectionReusableView.swift */; };
 		3D9218182992B07600358D78 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9218172992B07600358D78 /* HomeView.swift */; };
 		3D92181A2992B5B700358D78 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9218192992B5B700358D78 /* UIColor+Extension.swift */; };
 		3D92181C2992EFBD00358D78 /* TextCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92181B2992EFBD00358D78 /* TextCollectionViewCell.swift */; };
 		3D92181E2993B94000358D78 /* DataSourceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92181D2993B94000358D78 /* DataSourceItem.swift */; };
-		3D9218202993DE8B00358D78 /* FillerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92181F2993DE8B00358D78 /* FillerCollectionViewCell.swift */; };
 		3D9218222993E1D200358D78 /* ItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9218212993E1D200358D78 /* ItemCollectionViewCell.swift */; };
 		3DCAB2E9298C541B0068A0E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCAB2E8298C541B0068A0E9 /* AppDelegate.swift */; };
 		3DCAB2EB298C541B0068A0E9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DCAB2EA298C541B0068A0E9 /* SceneDelegate.swift */; };
@@ -21,11 +21,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3D4DEDF729952326006AC3EF /* HeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		3D9218172992B07600358D78 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		3D9218192992B5B700358D78 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		3D92181B2992EFBD00358D78 /* TextCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCollectionViewCell.swift; sourceTree = "<group>"; };
 		3D92181D2993B94000358D78 /* DataSourceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceItem.swift; sourceTree = "<group>"; };
-		3D92181F2993DE8B00358D78 /* FillerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FillerCollectionViewCell.swift; sourceTree = "<group>"; };
 		3D9218212993E1D200358D78 /* ItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		3DCAB2E5298C541B0068A0E9 /* SurfApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SurfApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DCAB2E8298C541B0068A0E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -70,8 +70,8 @@
 				3DCAB2EA298C541B0068A0E9 /* SceneDelegate.swift */,
 				3DCAB2EC298C541B0068A0E9 /* HomeViewController.swift */,
 				3D9218172992B07600358D78 /* HomeView.swift */,
+				3D4DEDF729952326006AC3EF /* HeaderCollectionReusableView.swift */,
 				3D92181B2992EFBD00358D78 /* TextCollectionViewCell.swift */,
-				3D92181F2993DE8B00358D78 /* FillerCollectionViewCell.swift */,
 				3D9218212993E1D200358D78 /* ItemCollectionViewCell.swift */,
 				3D9218192992B5B700358D78 /* UIColor+Extension.swift */,
 				3D92181D2993B94000358D78 /* DataSourceItem.swift */,
@@ -159,7 +159,7 @@
 				3D92181E2993B94000358D78 /* DataSourceItem.swift in Sources */,
 				3DCAB2ED298C541B0068A0E9 /* HomeViewController.swift in Sources */,
 				3DCAB2E9298C541B0068A0E9 /* AppDelegate.swift in Sources */,
-				3D9218202993DE8B00358D78 /* FillerCollectionViewCell.swift in Sources */,
+				3D4DEDF829952326006AC3EF /* HeaderCollectionReusableView.swift in Sources */,
 				3DCAB2EB298C541B0068A0E9 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

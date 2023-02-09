@@ -13,6 +13,7 @@ enum LabelType {
 }
 
 final class TextCollectionViewCell: UICollectionViewCell {
+    var view = UIView()
     var stackView = UIStackView()
     var titleLabel = UILabel()
     var descriptionLabel = UILabel()
@@ -21,6 +22,12 @@ final class TextCollectionViewCell: UICollectionViewCell {
         removeSubviewFromStackView()
         titleLabel.removeFromSuperview()
         descriptionLabel.removeFromSuperview()
+
+        if titleLabelText != nil {
+            self.clipsToBounds = true
+            self.layer.cornerRadius = 25
+            self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        }
         backgroundColor = UIColor.white
 
         makeStackView(self, titleLabelText, descriptionLabelText)

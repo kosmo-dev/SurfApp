@@ -8,11 +8,15 @@
 import UIKit
 
 enum DataSourceSection {
-    case filler
     case title
     case courses1
     case description
     case courses2
+}
+
+enum SupplementaryViewKind {
+    static let header = "header"
+    static let footer = "footer"
 }
 
 
@@ -23,6 +27,9 @@ final class HomeViewController: UIViewController {
     let clearCollectionViewCellReuseId = "clearCollectionViewCellReuseId"
     let textCollectionViewCellReuseId = "textCollectionViewCellReuseId"
     let itemCollectionViewCellReuseId = "itemCollectionViewCellReuseId"
+
+    let headerReusableViewReuseId = "headerReusableViewReuseId"
+    let footerReusableViewReuseId = "footerReusableViewReuseId"
 
     private var courses1: [DataSourceItem] = [.courses1("iOS"), .courses1("Android"), .courses1("Flutter"), .courses1("Design"), .courses1("QA"), .courses1("PM"), .courses1("HR"), .courses1("System Analysis"), .courses1("Security")]
     private var courses2: [DataSourceItem] = [.courses2("iOS"), .courses2("Android"), .courses2("Flutter"), .courses2("Design"), .courses2("QA"), .courses2("PM"), .courses2("HR"), .courses2("System Analysis"), .courses2("Security")]
@@ -46,11 +53,17 @@ final class HomeViewController: UIViewController {
 
         guard let collectionView else {return}
 
+        collectionView.bounces = false
+        collectionView.alwaysBounceVertical = false
+        collectionView.alwaysBounceHorizontal = false
+
         homeView.setupView(collectionView)
 
-        collectionView.register(FillerCollectionViewCell.self, forCellWithReuseIdentifier: clearCollectionViewCellReuseId)
         collectionView.register(TextCollectionViewCell.self, forCellWithReuseIdentifier: textCollectionViewCellReuseId)
         collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemCollectionViewCellReuseId)
+
+        collectionView.register(HeaderCollectionReusableView.self, forSupplementaryViewOfKind: SupplementaryViewKind.header, withReuseIdentifier: headerReusableViewReuseId)
+        collectionView.register(HeaderCollectionReusableView.self, forSupplementaryViewOfKind: SupplementaryViewKind.footer, withReuseIdentifier: footerReusableViewReuseId)
 
         applySnaphot()
     }
@@ -59,37 +72,42 @@ final class HomeViewController: UIViewController {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             let sectionItem = self.sections[sectionIndex]
 
-            switch sectionItem {
-            case .filler:
-                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1/3))
-                let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-                let section = NSCollectionLayoutSection(group: group)
-                return section
+            let headerItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(400))
+            let headerItem = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerItemSize, elementKind: SupplementaryViewKind.header, alignment: .top)
+            let footerItem = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerItemSize, elementKind: SupplementaryViewKind.footer, alignment: .bottom)
 
+            switch sectionItem {
             case .title:
                 let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(130))
                 let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
+                section.boundarySupplementaryItems = [headerItem]
                 return section
-
-            case .courses1, .courses2:
+            case .courses1:
                 let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .fractionalHeight(1))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 let groupSize = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .estimated(44))
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
-                section.orthogonalScrollingBehavior = .continuous
+                section.orthogonalScrollingBehavior = .groupPaging
                 return section
             case .description:
                 let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
-                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(64))
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(70))
                 let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
+                return section
+            case .courses2:
+                let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .fractionalHeight(1))
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                let groupSize = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .estimated(44))
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+                let section = NSCollectionLayoutSection(group: group)
+                section.orthogonalScrollingBehavior = .groupPaging
+                section.boundarySupplementaryItems = [footerItem]
                 return section
             }
         }
@@ -100,8 +118,7 @@ final class HomeViewController: UIViewController {
 
         guard let collectionView else {return}
 
-//        collectionView.backgroundColor = UIColor.clear
-        collectionView.backgroundColor = UIColor.white
+        collectionView.backgroundColor = UIColor.clear
 
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -121,11 +138,6 @@ final class HomeViewController: UIViewController {
             var collectionViewCell = UICollectionViewCell()
 
             switch section {
-            case .filler:
-                if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.clearCollectionViewCellReuseId, for: indexPath) as? FillerCollectionViewCell {
-                    cell.setupView(type: "clear")
-                    collectionViewCell = cell
-                }
             case .title:
                 if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.textCollectionViewCellReuseId, for: indexPath) as? TextCollectionViewCell {
                     cell.setupView(titleLabelText: "Стажировка в Surf", descriptionLabelText: itemIdentifier.title)
@@ -149,13 +161,32 @@ final class HomeViewController: UIViewController {
             }
             return collectionViewCell
         }
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath -> UICollectionReusableView? in
+
+            var reusableView: UICollectionReusableView?
+
+            switch kind {
+            case SupplementaryViewKind.header:
+                if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: SupplementaryViewKind.header, withReuseIdentifier: self.headerReusableViewReuseId, for: indexPath) as? HeaderCollectionReusableView {
+                    headerView.setupView(type: SupplementaryViewKind.header)
+                    reusableView = headerView
+                }
+            case SupplementaryViewKind.footer:
+                if let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: SupplementaryViewKind.footer, withReuseIdentifier: self.footerReusableViewReuseId, for: indexPath) as? HeaderCollectionReusableView {
+                    footerView.setupView(type: SupplementaryViewKind.footer)
+                    reusableView = footerView
+                }
+            default:
+                reusableView = UICollectionReusableView()
+            }
+            return reusableView
+        }
         return dataSource
     }
 
     func applySnaphot() {
         var snapshot = NSDiffableDataSourceSnapshot<DataSourceSection, DataSourceItem>()
-        snapshot.appendSections([.filler, .title, .courses1, .description, .courses2])
-        snapshot.appendItems([.filler("clear")], toSection: .filler)
+        snapshot.appendSections([.title, .courses1, .description, .courses2])
         snapshot.appendItems([.title("Работай над реальными задачами под руководством опытного наставника и получи возможность стать частью команды мечты.")], toSection: .title)
         snapshot.appendItems(courses1, toSection: .courses1)
         snapshot.appendItems([.description("Получай стипендию, выстраивая удобный график, работай на современном железе.")], toSection: .description)
