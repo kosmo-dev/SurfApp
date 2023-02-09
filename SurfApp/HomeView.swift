@@ -11,26 +11,24 @@ final class HomeView: UIView {
     let footerContainerView = UIView()
     let stackView = UIStackView()
     var backgroundView = UIImageView()
-    var collectionView = UICollectionView()
 
     // MARK: - Public Methods
     func setupView(_ collectionView: UICollectionView) {
-        self.collectionView = collectionView
         setupBackgroundImage()
 
-        makeFooterView(backgroundView)
+        makeFooterView(backgroundView, collectionView)
         makeStackView(footerContainerView)
-        makeCollectionView(footerContainerView)
     }
 
     // MARK: - Private Methods
-    private func makeFooterView(_ view: UIView) {
+    private func makeFooterView(_ view: UIView, _ topView: UIView) {
         footerContainerView.backgroundColor = UIColor.white
         view.addSubview(footerContainerView)
 
         footerContainerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             footerContainerView.heightAnchor.constraint(equalToConstant: 134),
+            footerContainerView.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: 0),
             footerContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             footerContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             footerContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
@@ -76,23 +74,9 @@ final class HomeView: UIView {
         backgroundView = imageView
     }
 
-    private func makeCollectionView(_ footerView: UIView) {
-
-        collectionView.backgroundColor = UIColor.white
-
-        addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: footerView.topAnchor)
-        ])
-    }
-
     private func makeButton(_ title: String) -> UIButton {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: CustomColors.buttonSelected)
+        button.backgroundColor = UIColor.buttonSelected
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 30
@@ -108,7 +92,7 @@ final class HomeView: UIView {
         let label = UILabel()
         label.text = text
         label.setContentHuggingPriority(UILayoutPriority(251), for: .horizontal)
-        label.textColor = UIColor(named: CustomColors.grayText)
+        label.textColor = UIColor.grayText
         label.font = UIFont.systemFont(ofSize: 14)
 
         label.translatesAutoresizingMaskIntoConstraints = false
