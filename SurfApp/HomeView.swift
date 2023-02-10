@@ -2,100 +2,211 @@
 //  HomeView.swift
 //  SurfApp
 //
-//  Created by Вадим Кузьмин on 07.02.2023.
+//  Created by Вадим Кузьмин on 09.02.2023.
 //
 
 import UIKit
 
-final class HomeView: UIView {
-    let footerContainerView = UIView()
-    let stackView = UIStackView()
-    var backgroundView = UIImageView()
+class HomeView: UIView {
 
-    // MARK: - Public Methods
-    func setupView(_ collectionView: UICollectionView) {
-        setupBackgroundImage()
+    func setupView() {
+        addSubview(backgroundImageView)
+        addSubview(scrollView)
+        scrollView.addSubview(scrollViewContainer)
+        scrollViewContainer.addArrangedSubview(headerView)
+        scrollViewContainer.addArrangedSubview(titleView)
+        scrollViewContainer.addArrangedSubview(firstDescriptionView)
+        scrollViewContainer.addArrangedSubview(secondDescriptionView)
+        scrollViewContainer.addArrangedSubview(footerView)
+        addSubview(footerElementsView)
 
-        makeFooterView(backgroundView, collectionView)
-        makeStackView(footerContainerView)
+        makeConstraints()
     }
 
-    // MARK: - Private Methods
-    private func makeFooterView(_ view: UIView, _ topView: UIView) {
-        footerContainerView.backgroundColor = UIColor.white
-        view.addSubview(footerContainerView)
+    let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.bounces = false
 
-        footerContainerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+
+    let scrollViewContainer: UIStackView = {
+        let view = UIStackView()
+
+        view.axis = .vertical
+        view.spacing = 0
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    let headerView: UIView = {
+        let view = UIView()
+
+        view.backgroundColor = .clear
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.heightAnchor.constraint(equalToConstant: 400).isActive = true
+        return view
+    }()
+
+    let titleView: UIView = {
+        let label = UILabel()
+        let view = UIView()
+
+        label.text = "Стажировка в Surf"
+        label.textColor = .buttonSelected
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 25
+        view.layer.maskedCorners = CACornerMask([.layerMinXMinYCorner, .layerMaxXMinYCorner])
+        view.addSubview(label)
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            footerContainerView.heightAnchor.constraint(equalToConstant: 134),
-            footerContainerView.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: 0),
-            footerContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            footerContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            footerContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 24),
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-    }
-    private func makeStackView(_ view: UIView) {
+        return view
+    }()
+
+    let firstDescriptionView: UIView = {
+        let label = UILabel()
+        let view = UIView()
+
+        label.text = "Работай над реальными задачами под руководством опытного наставника и получи возможность стать частью команды мечты."
+        label.textColor = .grayText
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 14)
+
+        view.backgroundColor = .white
+        view.addSubview(label)
+
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 12),
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        return view
+    }()
+
+    let secondDescriptionView: UIView = {
+        let label = UILabel()
+        let view = UIView()
+
+        label.text = "Получай стипендию, выстраивай удобный график, работай на современном железе."
+        label.textColor = .grayText
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 14)
+
+        view.backgroundColor = .white
+        view.addSubview(label)
+
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 24),
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        return view
+    }()
+
+
+    let footerView: UIView = {
+        let view = UIView()
+
+        view.backgroundColor = UIColor.white
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.heightAnchor.constraint(equalToConstant: 400).isActive = true
+        return view
+    }()
+
+    let footerElementsView: UIView = {
+        let view = UIView()
+        let stackView = UIStackView()
+        let button = UIButton()
+        let label = UILabel()
+
+        view.backgroundColor = UIColor.white
+
         stackView.axis = .horizontal
         stackView.distribution = .fill
         stackView.spacing = 24
 
-        let button = makeButton("Отправить заявку")
-        let label = makeLabel("Хочешь к нам?")
-
-        stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(button)
-
-        view.addSubview(stackView)
-
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -58)
-        ])
-    }
-
-    private func setupBackgroundImage() {
-        guard let image = UIImage(named: "background") else {
-            return
-        }
-        let imageView = UIImageView(image: image)
-        imageView.contentMode = .scaleAspectFill
-
-        addSubview(imageView)
-
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
-        backgroundView = imageView
-    }
-
-    private func makeButton(_ title: String) -> UIButton {
-        let button = UIButton()
         button.backgroundColor = UIColor.buttonSelected
-        button.setTitle(title, for: .normal)
+        button.setTitle("Отправить заявку", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 30
 
-        button.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            button.heightAnchor.constraint(equalToConstant: 60)
-        ])
-        return button
-    }
-
-    private func makeLabel(_ text: String) -> UILabel {
-        let label = UILabel()
-        label.text = text
+        label.text = "Хочешь к нам?"
         label.setContentHuggingPriority(UILayoutPriority(251), for: .horizontal)
         label.textColor = UIColor.grayText
         label.font = UIFont.systemFont(ofSize: 14)
 
+        view.addSubview(stackView)
+        stackView.addArrangedSubview(label)
+        stackView.addArrangedSubview(button)
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        button.translatesAutoresizingMaskIntoConstraints = false
         label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+        NSLayoutConstraint.activate([
+            button.heightAnchor.constraint(equalToConstant: 60),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 32),
+            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -58)
+        ])
+        return view
+    }()
+
+    let backgroundImageView: UIImageView = {
+        guard let image = UIImage(named: "background") else {
+            return UIImageView()
+        }
+        let view = UIImageView()
+        view.image = image
+        view.contentMode = .scaleAspectFill
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    func makeConstraints() {
+        NSLayoutConstraint.activate([
+            backgroundImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            backgroundImageView.topAnchor.constraint(equalTo: topAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: footerElementsView.topAnchor),
+
+            scrollViewContainer.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            scrollViewContainer.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            scrollViewContainer.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollViewContainer.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+
+            scrollViewContainer.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
+            footerElementsView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            footerElementsView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            footerElementsView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
     }
 }
