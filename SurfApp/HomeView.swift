@@ -7,23 +7,25 @@
 
 import UIKit
 
-class HomeView: UIView {
+final class HomeView: UIView {
 
-    func setupView() {
+    func setupView(collectionView: UICollectionView) {
+
         addSubview(backgroundImageView)
         addSubview(scrollView)
         scrollView.addSubview(scrollViewContainer)
         scrollViewContainer.addArrangedSubview(headerView)
         scrollViewContainer.addArrangedSubview(titleView)
         scrollViewContainer.addArrangedSubview(firstDescriptionView)
+        scrollViewContainer.addArrangedSubview(collectionView)
         scrollViewContainer.addArrangedSubview(secondDescriptionView)
         scrollViewContainer.addArrangedSubview(footerView)
         addSubview(footerElementsView)
 
-        makeConstraints()
+        makeConstraints(collectionView: collectionView)
     }
 
-    let scrollView: UIScrollView = {
+    private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
         scrollView.bounces = false
@@ -32,7 +34,7 @@ class HomeView: UIView {
         return scrollView
     }()
 
-    let scrollViewContainer: UIStackView = {
+    private let scrollViewContainer: UIStackView = {
         let view = UIStackView()
 
         view.axis = .vertical
@@ -42,7 +44,7 @@ class HomeView: UIView {
         return view
     }()
 
-    let headerView: UIView = {
+    private let headerView: UIView = {
         let view = UIView()
 
         view.backgroundColor = .clear
@@ -52,7 +54,7 @@ class HomeView: UIView {
         return view
     }()
 
-    let titleView: UIView = {
+    private let titleView: UIView = {
         let label = UILabel()
         let view = UIView()
 
@@ -76,7 +78,7 @@ class HomeView: UIView {
         return view
     }()
 
-    let firstDescriptionView: UIView = {
+    private let firstDescriptionView: UIView = {
         let label = UILabel()
         let view = UIView()
 
@@ -94,12 +96,12 @@ class HomeView: UIView {
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             label.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             label.topAnchor.constraint(equalTo: view.topAnchor, constant: 12),
-            label.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -12)
         ])
         return view
     }()
 
-    let secondDescriptionView: UIView = {
+    private let secondDescriptionView: UIView = {
         let label = UILabel()
         let view = UIView()
 
@@ -122,8 +124,7 @@ class HomeView: UIView {
         return view
     }()
 
-
-    let footerView: UIView = {
+    private let footerView: UIView = {
         let view = UIView()
 
         view.backgroundColor = UIColor.white
@@ -133,7 +134,14 @@ class HomeView: UIView {
         return view
     }()
 
-    let footerElementsView: UIView = {
+    private let collectionViewContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.white
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    private let footerElementsView: UIView = {
         let view = UIView()
         let stackView = UIStackView()
         let button = UIButton()
@@ -173,7 +181,7 @@ class HomeView: UIView {
         return view
     }()
 
-    let backgroundImageView: UIImageView = {
+    private let backgroundImageView: UIImageView = {
         guard let image = UIImage(named: "background") else {
             return UIImageView()
         }
@@ -185,7 +193,8 @@ class HomeView: UIView {
         return view
     }()
 
-    func makeConstraints() {
+    private func makeConstraints(collectionView: UICollectionView) {
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             backgroundImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             backgroundImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
