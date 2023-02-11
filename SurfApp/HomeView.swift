@@ -7,10 +7,17 @@
 
 import UIKit
 
+protocol HomeViewDelegate: AnyObject {
+    func didTappedsendApplicationButton()
+}
+
 final class HomeView: UIView {
 
-    func setupView(collectionView: UICollectionView) {
+    // MARK: - Public properties
+    weak var delegate: HomeViewDelegate?
 
+    // MARK: - Public Methods
+    func setupView(collectionView: UICollectionView) {
         addSubview(backgroundImageView)
         addSubview(scrollView)
         scrollView.addSubview(scrollViewContainer)
@@ -25,6 +32,7 @@ final class HomeView: UIView {
         makeConstraints(collectionView: collectionView)
     }
 
+    // MARK: - Private Properties
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -157,6 +165,7 @@ final class HomeView: UIView {
         button.setTitle("Отправить заявку", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 30
+        button.addTarget(self, action: #selector(sendApplicationButtonTapped), for: .touchUpInside)
 
         label.text = "Хочешь к нам?"
         label.setContentHuggingPriority(UILayoutPriority(251), for: .horizontal)
@@ -193,6 +202,7 @@ final class HomeView: UIView {
         return view
     }()
 
+    // MARK: - Private Methods
     private func makeConstraints(collectionView: UICollectionView) {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -217,5 +227,10 @@ final class HomeView: UIView {
             footerElementsView.trailingAnchor.constraint(equalTo: trailingAnchor),
             footerElementsView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+    }
+
+    @objc private func sendApplicationButtonTapped() {
+        delegate?.didTappedsendApplicationButton()
+        print("button tapped")
     }
 }

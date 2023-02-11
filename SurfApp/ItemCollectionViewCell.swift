@@ -7,29 +7,46 @@
 
 import UIKit
 
-class ItemCollectionViewCell: UICollectionViewCell {
+protocol ItemCollectionViewCellDelegate: AnyObject {
+    func didTappedCellButton(_ name: String, indexPathRow: Int)
+}
 
-    func setupView(_ text: String) {
+final class ItemCollectionViewCell: UICollectionViewCell {
+
+    weak var delegate: ItemCollectionViewCellDelegate?
+
+    private var cellName: String?
+    private var indexPathRow: Int?
+
+    func setupView(_ text: String, state: UIButton.State, indexPathRow: Int) {
         button.setTitle(text, for: .normal)
+        if state == .selected {
+            button.isSelected = true
+            button.backgroundColor = .buttonSelected
+        } else {
+            button.isSelected = false
+            button.backgroundColor = .grayButton
+        }
         addSubview(button)
         makeConstraints()
-        layoutIfNeeded()
-        print(button.titleLabel?.frame.width)
+        cellName = text
+        self.indexPathRow = indexPathRow
     }
 
-    let button: UIButton = {
+    private let button: UIButton = {
         let button = UIButton()
         button.backgroundColor = .grayButton
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         button.layer.cornerRadius = 12
         button.setTitleColor(.black, for: .normal)
-        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
+        button.setTitleColor(.white, for: .selected)
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
 
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
 
-    func makeConstraints() {
+    private func makeConstraints() {
         NSLayoutConstraint.activate([
             button.topAnchor.constraint(equalTo: topAnchor),
             button.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -37,4 +54,17 @@ class ItemCollectionViewCell: UICollectionViewCell {
             button.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
+
+    @objc private func buttonTapped() {
+        guard let cellName, let indexPathRow else {return}
+        button.isSelected.toggle()
+        if button.isSelected {
+            button.backgroundColor = .buttonSelected
+        } else {
+            button.backgroundColor = .grayButton
+        }
+        print(cellName)
+        delegate?.didTappedCellButton(cellName, indexPathRow: indexPathRow)
+    }
+
 }
