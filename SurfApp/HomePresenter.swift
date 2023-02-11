@@ -8,13 +8,13 @@
 import Foundation
 
 protocol HomePresentationLogic {
-    func presentDataSource(_ response: DataModel.Response, scrollPosition: Int?, needReload: Bool)
+    func presentDataSource(_ response: DataModel.Response, needReload: Bool)
 }
 
 final class HomePresenter: HomePresentationLogic {
     weak var viewController: HomeDisplayLogic?
     
-    func presentDataSource(_ response: DataModel.Response, scrollPosition: Int?, needReload: Bool) {
-        viewController?.displayData(DataModel.ViewModel(viewModel: response.dataSource), position: scrollPosition, needReload: needReload)
+    func presentDataSource(_ response: DataModel.Response, needReload: Bool) {
+        viewController?.displayData(DataModel.ViewModel(viewModel: response.dataSource), needReload: needReload)
     }
 }

@@ -9,7 +9,7 @@ import UIKit
 
 enum DataModel {
     struct Request {
-        let cellName: String
+        let cellIndex: Int
     }
 
     struct Response {

@@ -8,29 +8,21 @@
 import UIKit
 
 protocol ItemCollectionViewCellDelegate: AnyObject {
-    func didTappedCellButton(_ name: String, indexPathRow: Int)
+    func didTappedCellButton(index: Int, isSelected: Bool)
 }
 
 final class ItemCollectionViewCell: UICollectionViewCell {
 
     weak var delegate: ItemCollectionViewCellDelegate?
+    private var cellIndex: Int?
 
-    private var cellName: String?
-    private var indexPathRow: Int?
-
-    func setupView(_ text: String, state: UIButton.State, indexPathRow: Int) {
+    func setupView(_ text: String, state: UIButton.State, index: Int) {
         button.setTitle(text, for: .normal)
-        if state == .selected {
-            button.isSelected = true
-            button.backgroundColor = .buttonSelected
-        } else {
-            button.isSelected = false
-            button.backgroundColor = .grayButton
-        }
+        cellIndex = index
+        configureButton(for: state)
+
         addSubview(button)
         makeConstraints()
-        cellName = text
-        self.indexPathRow = indexPathRow
     }
 
     private let button: UIButton = {
@@ -55,16 +47,24 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         ])
     }
 
+    private func configureButton(for state: UIButton.State) {
+        if state == .selected {
+            button.isSelected = true
+            button.backgroundColor = .buttonSelected
+        } else {
+            button.isSelected = false
+            button.backgroundColor = .grayButton
+        }
+    }
+
     @objc private func buttonTapped() {
-        guard let cellName, let indexPathRow else {return}
+        guard let cellIndex else {return}
         button.isSelected.toggle()
         if button.isSelected {
             button.backgroundColor = .buttonSelected
         } else {
             button.backgroundColor = .grayButton
         }
-        print(cellName)
-        delegate?.didTappedCellButton(cellName, indexPathRow: indexPathRow)
+        delegate?.didTappedCellButton(index: cellIndex, isSelected: button.isSelected)
     }
-
 }

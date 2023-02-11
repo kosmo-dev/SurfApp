@@ -8,15 +8,15 @@
 import UIKit
 
 protocol HomeDisplayLogic: AnyObject {
-    func displayData(_ viewModel: DataModel.ViewModel, position: Int?, needReload: Bool)
+    func displayData(_ viewModel: DataModel.ViewModel, needReload: Bool)
 }
 
 final class HomeViewController: UIViewController {
 
     var interactor: HomeBusinessLogic?
     private var dataSource = [Item]()
-    private var dataSourceIsUpdating = false
-    private var indexPathRow: Int = 0
+    private var viewFirstTimeLoaded = false
+    private var numberOfCells = 100
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nil, bundle: nil)
@@ -71,29 +71,32 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let maxIndex = collectionView.indexPathsForVisibleItems.max()?.row else {return}
         guard let minIndex = collectionView.indexPathsForVisibleItems.min()?.row else {return}
-        print(maxIndex)
 
-        if minIndex == 0 && !dataSourceIsUpdating {
-            interactor?.addItemsToDataSource(at: .first)
-            dataSourceIsUpdating = true
-            print("min index called")
-        } else if maxIndex == dataSource.count - 1 && !dataSourceIsUpdating{
-            interactor?.addItemsToDataSource(at: .last)
-            dataSourceIsUpdating = true
+        if minIndex == 0 {
+            collectionView.scrollToItem(at: IndexPath(row: numberOfCells / 2, section: 0), at: .left, animated: false)
         }
+        if maxIndex == numberOfCells - 1 {
+            collectionView.scrollToItem(at: IndexPath(row: numberOfCells / 2 + 5, section: 0), at: .left, animated: false)
+        }
+    }
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard viewFirstTimeLoaded else {return}
+        collectionView.scrollToItem(at: IndexPath(row: numberOfCells / 2, section: 0), at: .left, animated: false)
+        viewFirstTimeLoaded = true
     }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        dataSource.count
+        return numberOfCells
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as? ItemCollectionViewCell {
-            let item = dataSource[indexPath.row]
-            cell.setupView(item.name, state: item.state, indexPathRow: indexPath.row)
+            let index = indexPath.row
+            let item = dataSource[indexPath.row % dataSource.count]
+            cell.setupView(item.name, state: item.state, index: index)
             cell.delegate = self
             return cell
         } else {
@@ -106,7 +109,8 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let itemInsets: CGFloat = 48
         let height: CGFloat = 44
-        let width = dataSource[indexPath.item].name.size(withAttributes: [
+
+        let width = dataSource[indexPath.row % dataSource.count].name.size(withAttributes: [
                 NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .medium)
             ]).width + itemInsets
         return CGSize(width: width, height: height)
@@ -123,25 +127,20 @@ extension HomeViewController: HomeViewDelegate {
 }
 
 extension HomeViewController: ItemCollectionViewCellDelegate {
-    func didTappedCellButton(_ name: String, indexPathRow: Int) {
-        interactor?.updateDataSource(DataModel.Request(cellName: name))
-        collectionView.scrollToItem(at: IndexPath(row: indexPathRow, section: 0), at: .left, animated: true)
+    func didTappedCellButton(index: Int, isSelected: Bool) {
+        interactor?.updateDataSource(DataModel.Request(cellIndex: index))
+        if isSelected {
+            collectionView.scrollToItem(at: IndexPath(row: index, section: 0), at: .left, animated: true)
+        }
     }
 }
 
 extension HomeViewController: HomeDisplayLogic {
-    func displayData(_ viewModel: DataModel.ViewModel, position: Int?, needReload: Bool) {
-        print(dataSource.count)
+    func displayData(_ viewModel: DataModel.ViewModel, needReload: Bool) {
         dataSource = viewModel.viewModel
         guard needReload else {return}
-        print(needReload)
         DispatchQueue.main.async {
             self.collectionView.reloadData()
-            if let position = position {
-                self.collectionView.scrollToItem(at: IndexPath(row: position, section: 0), at: .left, animated: false)
-                print("scroll to item called")
-            }
-            self.dataSourceIsUpdating = false
         }
     }
 }
