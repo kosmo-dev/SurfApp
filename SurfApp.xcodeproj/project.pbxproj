@@ -51,6 +51,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3DBF095C29985EDD001B55AA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3D4DEDFB29955E0B006AC3EF /* HomeView.swift */,
+				3D9218212993E1D200358D78 /* ItemCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		3DBF095D29985EE8001B55AA /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				3D9218192992B5B700358D78 /* UIColor+Extension.swift */,
+				3DBF094E2997C374001B55AA /* UIButton+Extension.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		3DBF095E29985EFC001B55AA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3DBF09502997C650001B55AA /* DataModel.swift */,
+				3DBF09522997C762001B55AA /* Item.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		3DCAB2DC298C541B0068A0E9 = {
 			isa = PBXGroup;
 			children = (
@@ -75,12 +102,9 @@
 				3DCAB2EC298C541B0068A0E9 /* HomeViewController.swift */,
 				3DBF09542997C8BD001B55AA /* HomeInteractor.swift */,
 				3DBF09562997C968001B55AA /* HomePresenter.swift */,
-				3D4DEDFB29955E0B006AC3EF /* HomeView.swift */,
-				3D9218212993E1D200358D78 /* ItemCollectionViewCell.swift */,
-				3D9218192992B5B700358D78 /* UIColor+Extension.swift */,
-				3DBF094E2997C374001B55AA /* UIButton+Extension.swift */,
-				3DBF09502997C650001B55AA /* DataModel.swift */,
-				3DBF09522997C762001B55AA /* Item.swift */,
+				3DBF095E29985EFC001B55AA /* Models */,
+				3DBF095D29985EE8001B55AA /* Service */,
+				3DBF095C29985EDD001B55AA /* Views */,
 				3DCAB2F1298C541C0068A0E9 /* Assets.xcassets */,
 				3DCAB2F3298C541C0068A0E9 /* LaunchScreen.storyboard */,
 				3DCAB2F6298C541C0068A0E9 /* Info.plist */,

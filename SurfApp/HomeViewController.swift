@@ -13,19 +13,14 @@ protocol HomeDisplayLogic: AnyObject {
 
 final class HomeViewController: UIViewController {
 
+    // MARK: - Public Properties
     var interactor: HomeBusinessLogic?
+
+    // MARK: - Private Properties
     private var dataSource = [Item]()
     private var viewFirstTimeLoaded = false
     private var numberOfCells = 100
-
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nil, bundle: nil)
-        initialSetup()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private let homeView = HomeView()
 
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -40,6 +35,17 @@ final class HomeViewController: UIViewController {
         return collectionView
     }()
 
+    // MARK: - Initializers
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nil, bundle: nil)
+        initialSetup()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Life Cycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,12 +56,17 @@ final class HomeViewController: UIViewController {
 
         collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: "collectionViewCell")
 
-        let homeView = HomeView()
         self.view = homeView
         homeView.setupView(collectionView: collectionView)
         homeView.delegate = self
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        homeView.makeFirstHorizontalStackView(dataSource: dataSource)
+    }
+
+    // MARK: - Private Methods
     private func initialSetup() {
         let interactor = HomeInteractor()
         let presenter = HomePresenter()
@@ -67,6 +78,7 @@ final class HomeViewController: UIViewController {
     }
 }
 
+// MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let maxIndex = collectionView.indexPathsForVisibleItems.max()?.row else {return}
@@ -86,8 +98,8 @@ extension HomeViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension HomeViewController: UICollectionViewDataSource {
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return numberOfCells
     }
@@ -105,6 +117,7 @@ extension HomeViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let itemInsets: CGFloat = 48
@@ -117,8 +130,9 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - HomeViewDelegate
 extension HomeViewController: HomeViewDelegate {
-    func didTappedsendApplicationButton() {
+    func didTappedSendApplicationButton() {
         let alertController = UIAlertController(title: "Поздравляем!", message: "Ваша заявка успешно отправлена!", preferredStyle: .alert)
         let action = UIAlertAction(title: "Закрыть", style: .default)
         alertController.addAction(action)
@@ -126,6 +140,7 @@ extension HomeViewController: HomeViewDelegate {
     }
 }
 
+// MARK: - ItemCollectionViewCellDelegate
 extension HomeViewController: ItemCollectionViewCellDelegate {
     func didTappedCellButton(index: Int, isSelected: Bool) {
         interactor?.updateDataSource(DataModel.Request(cellIndex: index))
@@ -135,11 +150,13 @@ extension HomeViewController: ItemCollectionViewCellDelegate {
     }
 }
 
+// MARK: - HomeDisplayLogic
 extension HomeViewController: HomeDisplayLogic {
     func displayData(_ viewModel: DataModel.ViewModel, needReload: Bool) {
         dataSource = viewModel.viewModel
         guard needReload else {return}
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else {return}
             self.collectionView.reloadData()
         }
     }

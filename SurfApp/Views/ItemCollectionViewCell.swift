@@ -12,10 +12,13 @@ protocol ItemCollectionViewCellDelegate: AnyObject {
 }
 
 final class ItemCollectionViewCell: UICollectionViewCell {
-
+    // MARK: - Public Properties
     weak var delegate: ItemCollectionViewCellDelegate?
+
+    // MARK: - Private Properties
     private var cellIndex: Int?
 
+    // MARK: - Public Methods
     func setupView(_ text: String, state: UIButton.State, index: Int) {
         button.setTitle(text, for: .normal)
         cellIndex = index
@@ -25,6 +28,7 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         makeConstraints()
     }
 
+    // MARK: - Private Methods
     private let button: UIButton = {
         let button = UIButton()
         button.backgroundColor = .grayButton
