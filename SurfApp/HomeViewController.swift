@@ -63,7 +63,7 @@ final class HomeViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        homeView.makeFirstHorizontalStackView(dataSource: dataSource)
+        homeView.makeHorizontalScrollView(dataSource: dataSource)
     }
 
     // MARK: - Private Methods

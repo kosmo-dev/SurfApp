@@ -18,6 +18,7 @@ final class HomeView: UIView {
     // MARK: - Public Methods
     func setupView(collectionView: UICollectionView) {
         addSubview(backgroundImageView)
+        addSubview(bottomFillerView)
         addSubview(scrollView)
         scrollView.addSubview(scrollViewContainer)
         scrollViewContainer.addArrangedSubview(headerView)
@@ -30,20 +31,80 @@ final class HomeView: UIView {
         makeConstraints(collectionView: collectionView)
     }
 
-    func makeFirstHorizontalStackView(dataSource: [Item]) {
+    func makeHorizontalScrollView(dataSource: [Item]) {
         guard frame.width != 0 && !didMakeLayout else {return}
-        availableHeight = frame.height
         didMakeLayout = true
-        let result = makeView(for: dataSource, startIndex: 0)
-        let view = result.0
-        scrollViewContainer.addArrangedSubview(view)
-        makeSecondHorizontalStackView(index: result.1, dataSource: dataSource)
-    }
+        let view = UIView()
+        view.backgroundColor = .white
 
-    func makeSecondHorizontalStackView(index: Int, dataSource: [Item]) {
-        let view = makeView(for: dataSource, startIndex: index).0
+        let scrollView = UIScrollView()
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.contentInset.left = 20
+        scrollView.contentInset.right = 20
+
+        let verticalStackView = UIStackView()
+        verticalStackView.axis = .vertical
+        verticalStackView.spacing = 12
+        verticalStackView.distribution = .fill
+
+        let stackViewTuple = makeStackView(for: dataSource, startIndex: 0)
+        let firstStackView = stackViewTuple.0
+
+        let secondStackViewTuple = makeStackView(for: dataSource, startIndex: stackViewTuple.1)
+        let secondStackView = secondStackViewTuple.0
+
+        for i in (secondStackViewTuple.1)..<dataSource.count {
+            let item = dataSource[i]
+            let itemInsets: CGFloat = 48
+            let height: CGFloat = 44
+            let width = item.name.size(withAttributes: [
+                NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .medium)
+            ]).width + itemInsets
+            let cell = makeCellView(item: item, width: width, height: height)
+            firstStackView.layoutIfNeeded()
+            secondStackView.layoutIfNeeded()
+            let firstWidth = firstStackView.frame.width
+            let secondWidth = secondStackView.frame.width
+            if firstWidth > secondWidth {
+                secondStackView.addArrangedSubview(cell)
+            } else {
+                firstStackView.addArrangedSubview(cell)
+            }
+        }
+
+        let footerHeight: CGFloat = frame.height - safeAreaInsets.top - 400
+
         scrollViewContainer.addArrangedSubview(view)
+        view.addSubview(scrollView)
+        scrollView.addSubview(verticalStackView)
+        verticalStackView.addArrangedSubview(firstStackView)
+        verticalStackView.addArrangedSubview(secondStackView)
+        firstStackView.addArrangedSubview(makeFillerView())
+        secondStackView.addArrangedSubview(makeFillerView())
         scrollViewContainer.addArrangedSubview(footerView)
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+        firstStackView.translatesAutoresizingMaskIntoConstraints = false
+        secondStackView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            view.heightAnchor.constraint(equalToConstant: 110),
+
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.heightAnchor.constraint(equalToConstant: 110),
+
+            verticalStackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            verticalStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            verticalStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            verticalStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+
+            footerView.heightAnchor.constraint(equalToConstant: footerHeight)
+        ])
     }
 
     // MARK: - Private Properties
@@ -70,9 +131,7 @@ final class HomeView: UIView {
 
     private let headerView: UIView = {
         let view = UIView()
-
         view.backgroundColor = .clear
-
         view.translatesAutoresizingMaskIntoConstraints = false
         view.heightAnchor.constraint(equalToConstant: 460).isActive = true
         return view
@@ -150,11 +209,8 @@ final class HomeView: UIView {
 
     private let footerView: UIView = {
         let view = UIView()
-
         view.backgroundColor = UIColor.white
-
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 380).isActive = true
         return view
     }()
 
@@ -211,11 +267,16 @@ final class HomeView: UIView {
         return view
     }()
 
-    // MARK: - Private Methods
-    private func makeView(for dataSource: [Item], startIndex: Int) -> (UIView, Int) {
-        var availableWidth = frame.width
+    private let bottomFillerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    // MARK: - Private Methods
+    private func makeStackView(for dataSource: [Item], startIndex: Int) -> (UIStackView, Int) {
+        var availableWidth = frame.width
 
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -226,7 +287,7 @@ final class HomeView: UIView {
 
         var dataIndex = 0
 
-        for i in startIndex...dataSource.count {
+        for i in startIndex..<dataSource.count {
             dataIndex = i
             let item = dataSource[i]
             let itemInsets: CGFloat = 48
@@ -235,30 +296,29 @@ final class HomeView: UIView {
                     NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .medium)
                 ]).width + itemInsets
             if availableWidth - width > width {
-                let cell = ItemCollectionViewCell(frame: CGRect(x: 0, y: 0, width: width, height: height))
-                cell.setupView(item.name, state: item.state, index: i)
-                cell.translatesAutoresizingMaskIntoConstraints = false
-                cell.widthAnchor.constraint(equalToConstant: width).isActive = true
+                let cell = makeCellView(item: item, width: width, height: height)
                 stackView.addArrangedSubview(cell)
             } else {
-                let fillerView = UIView(frame: CGRect(x: 0, y: 0, width: availableWidth - width, height: height))
-                fillerView.translatesAutoresizingMaskIntoConstraints = false
-                stackView.addArrangedSubview(fillerView)
                 break
             }
             availableWidth -= width
         }
+        return (stackView, dataIndex)
+    }
 
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stackView)
-        NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            stackView.topAnchor.constraint(equalTo: view.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -12)
-        ])
-        availableHeight = availableHeight - view.bounds.height
-        return (view, dataIndex)
+    private func makeCellView(item: Item, width: CGFloat, height: CGFloat) -> ItemCollectionViewCell {
+        let cell = ItemCollectionViewCell(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        cell.setupView(item.name, state: item.state, index: 0)
+        cell.translatesAutoresizingMaskIntoConstraints = false
+        cell.widthAnchor.constraint(equalToConstant: width).isActive = true
+        return cell
+    }
+
+    private func makeFillerView() -> UIView {
+        let fillerView = UIView()
+        fillerView.translatesAutoresizingMaskIntoConstraints = false
+        fillerView.setContentCompressionResistancePriority(UILayoutPriority(252), for: .horizontal)
+        return fillerView
     }
 
     private func makeConstraints(collectionView: UICollectionView) {
@@ -283,7 +343,12 @@ final class HomeView: UIView {
 
             footerElementsView.leadingAnchor.constraint(equalTo: leadingAnchor),
             footerElementsView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            footerElementsView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            footerElementsView.bottomAnchor.constraint(equalTo: bottomAnchor),
+
+            bottomFillerView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            bottomFillerView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            bottomFillerView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            bottomFillerView.heightAnchor.constraint(equalToConstant: 225)
         ])
     }
 
